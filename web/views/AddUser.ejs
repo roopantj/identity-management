@@ -92,11 +92,36 @@
 	var UserAddress="";
 	
 	window.addEventListener('load', async () => {
-		console.log('In load', window.web3)
-		window.myWeb3 = new Web3(web3.currentProvider);
-		const cb = await myWeb3.eth.getCoinbase();
-		console.log(cb);
-		UserAddress=cb;
+		/*console.log('In load', window.ethereum)
+		window.myWeb3 = new Web3(window.ethereum);
+		//const cb = await myWeb3.eth.getCoinbase();
+		const accounts = await ethereum.request({ method: 'eth_accounts' });
+		console.log(accounts);
+		//UserAddress=cb;*/
+		var Eth,accounts;
+		if (window.ethereum) {
+          Eth = window.ethereum;
+          try {
+            // Request account access
+			console.log("eth ",Eth)
+            accounts = await window.ethereum.send('eth_requestAccounts');
+			console.log("Acc ",accounts)
+          } catch (error) {
+            // User denied account access...
+            console.error("User denied account access")
+          }
+        }
+        // Legacy dapp browsers...
+        else if (window.web3) {
+           Eth = window.web3.currentProvider;
+        }
+        // If no injected web3 instance is detected, fall back to Ganache
+        else {
+           Eth = new Web3.providers.HttpProvider('http://localhost:8080');
+        }
+
+		window.myWeb3 = new Web3(accounts[0]);
+		console.log("web3 ",window.myWeb3)
 	});
 	
 	function AddUser()
